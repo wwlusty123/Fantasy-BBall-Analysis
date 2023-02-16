@@ -29,12 +29,43 @@ As always when we discuss random variables, our goal should be to characterize t
 #### Assumption: Independence
 We will assume that each of a player's games are independent of one another. This is assumption shouldn't make us too uncomfortable but we will revisit this assumption later when we evaluate our model. 
 
-Now back to the model. Using the independence assumption we can define the cdf of the variable $X$ $$\begin{aligned}F_X(k)&=P(X_1 \leq k)P(X_2 \leq k) \cdot \cdot \cdot P(X_n \leq k) \\ &= F_{X_1}(k)\cdot \cdot\cdot F_{X_n}(k) \end{aligned}$$ This is good progress for the important random variable $X$, but we can make another assumption for the sake of modeling. 
+Now back to the model. Using the independence assumption we can define the cdf of the variable $X$ $$F_X(k)&=P(X_1 \leq k)P(X_2 \leq k) \cdot \cdot \cdot P(X_n \leq k) \\ &= F_{X_1}(k)\cdot \cdot\cdot F_{X_n}(k)$$ This is good progress for the important random variable $X$, but we can make another assumption for the sake of modeling. 
 
-### Assumption: Identically Distributed X_i
+### Assumption: Identically Distributed $X_i$
 We will assume some common distribution for each of the games $X_i$. This shouldn't make us too uncomfortable because in the real world, we know that the production of a given player in a game is somewhat inherent to the player. Of course, there are instances when a player might be expected to produce more against certain teams (Evan Fournier versus Boston in the 2021-2022 season, for example) but for the sake of modeling we will assume the probability distribution does not change for a given player in between their games. The intuitive explanation of this assumption is that the probability that a player produces a certain number of fantasy points (30, say) does not depend on the game that they're in. 
 
-Again let's return to our model. We now have $F_{X_i}(k)$ is the same for every $i=1, 2, ..., n$ and so $$F_X(k) = P(X \leq k) = [F_{X_i}(k)]^n \\ \text{which we will denote } F_i^n(k).$$ 
+Again let's return to our model. We now have $F_{X_i}(k)$ is the same for every $i=1, 2, ..., n$ and so $$F_X(k) = P(X \leq k) = [F_{X_i}(k)]^n \\ = F_i^n(k).$$ Now is the time to make a choice for the distribution of a player's fantasy production in a given game.
+
+### Assumption: X_i are Normal. 
+One reasonable choice for the distribution of the $X_i$ would be the normal distribution. One immediate concern of this choice is that the number of fantasy points in a given game by a player is inherently discrete, not continuous as a normal distribution would suggest. This is because the $X_i$ are typically given by a linear combination of the player's points, rebounds, assists, etc. which are discrete (integer) values. So why is it OK to model a discrete number with a continuous random variable? Well, in reality a more accurate model would be to say that the number of points, rebounds, and so on are binomial random variables and so the $X_i$ would be some linear combination of binomial variables. However, we know that as the number of trials in a binomial distribution grows large, the binomial pmf is well-approximated by a normal bell curve. This is illustrated below. 
+
+
+```python
+import matplotlib.pyplot as plt
+from scipy.stats import binom
+from scipy.stats import norm
+import numpy as np
+shots_attempted = 20
+shot_make_pct = 0.57
+made_shots_possible = range(0, 20)
+x_normal_range = np.linspace(0, 20, 100)
+shots_made_probs = binom.pmf(n=shots_attempted, p=shot_make_pct, k=made_shots_possible)
+shots_made_probs_normal = norm.pdf(x_normal_range, loc=shots_attempted*shot_make_pct, scale = np.sqrt(shots_attempted * shot_make_pct * (1 - shot_make_pct)))
+plt.stem(made_shots_possible, shots_made_probs, label="Binomial Predicted Probabilities")
+plt.plot(x_normal_range, shots_made_probs_normal, "purple", label="Normal Predicted Probabilities")
+plt.legend()
+plt.xlabel("Number of shots made")
+plt.ylabel("Probability")
+plt.show()
+```
+
+    /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/ipykernel_launcher.py:11: UserWarning: In Matplotlib 3.3 individual lines on a stem plot will be added as a LineCollection instead of individual lines. This significantly improves the performance of a stem plot. To remove this warning and switch to the new behaviour, set the "use_line_collection" keyword argument to True.
+      # This is added back by InteractiveShellApp.init_path()
+
+
+
+![png](README_files/README_1_1.png)
+
 
 
 ```python
