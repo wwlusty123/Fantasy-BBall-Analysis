@@ -24,12 +24,12 @@ However, most of this modeling has been done mentally through trial and error. T
 ### 4. Model
 We will be using probability and statistical theory extensively in this investigation. The fundamental unit of a fantasy team is the player, so our investigation will begin there. Let $X_1, X_2, ..., X_n$ be the number of fantasy points a specific player produces in each of their $n$ games this week. In lock-in mode, as a manager, our goal should be to lock in every player's most highly productive game of the week. A relevant value, then, is the max of the $X_1, ..., X_n$ which we will denote $$X=\max{X_1, ..., X_n}. $$ The best way to evaluate the player in lock-in mode is by developing a sense of behavior for the variable $X$. Let us model the $X_1, ..., X_n$ as a sequence of random variables. The marginal distributions of the $X_i$ and the joint distribution of the sequence of games $X_1, ..., X_n$ will be a crucial point of discussion, but let's just put that aside for now. It follows that the variable $X$ is also a random variable since it is a function of the $n$ random variables $X_1, ..., X_n$. 
 
-As always when we discuss random variables, our goal should be to characterize their behavior in terms of their probability density function (pdf) or cumulative density function (cdf). I will assume that the reader is familiar with these functions but let us note that once the pdf of a random variable is known, we can fully characterize the behavior of that random variable. Suppose that the cdfs and pdfs of the individual games $X_i$ are known to be $F_{X_i}(k) = \mathbb{P}(X_i \leq k)$ and $f_{X_i}(k) = F'_{X_i}(k)$. Now we would like to find either the pdf or the cdf of $X=\max{X_1, ..., X_n}$. Unfortunately, it is not easy to describe the pdf of the max of a set of random variables directly. However, we can observe that $$P(X \leq k) = P(X_1 \leq k \text{ and } X_2 \leq k \text{ and } ... \text{ and } X_n \leq k)$$. This helps us because we already know $P(X_i \leq k)$ for each $i$ but requires us to make our first assumption. 
+As always when we discuss random variables, our goal should be to characterize their behavior in terms of their probability density function (pdf) or cumulative density function (cdf). I will assume that the reader is familiar with these functions but let us note that once the pdf of a random variable is known, we can fully characterize the behavior of that random variable. Suppose that the cdfs and pdfs of the individual games $X_i$ are known to be $F_{X_i}(k) = \mathbb{P}(X_i \leq k)$ and $f_{X_i}(k) = F'_{X_i}(k)$. Now we would like to find either the pdf or the cdf of $X=\max{X_1, ..., X_n}$. Unfortunately, it is not easy to describe the pdf of the max of a set of random variables directly. However, we can observe that $$P(X \leq k) = P(X_1 \leq k \text{ and } X_2 \leq k \text{ and } ... \text{ and } X_n \leq k).$$ This helps us because we already know $P(X_i \leq k)$ for each $i$ but requires us to make our first assumption. 
 
 #### Assumption: Independence
 We will assume that each of a player's games are independent of one another. This is assumption shouldn't make us too uncomfortable but we will revisit this assumption later when we evaluate our model. 
 
-Now back to the model. Using the independence assumption we can define the cdf of the variable $X$ $$F_X(k)&=P(X_1 \leq k)P(X_2 \leq k) \cdot \cdot \cdot P(X_n \leq k) \\ &= F_{X_1}(k)\cdot \cdot\cdot F_{X_n}(k)$$ This is good progress for the important random variable $X$, but we can make another assumption for the sake of modeling. 
+Now back to the model. Using the independence assumption we can define the cdf of the variable $X$ $$F_X(k)=P(X_1 \leq k)P(X_2 \leq k) \cdot \cdot \cdot P(X_n \leq k) \\ = F_{X_1}(k)\cdot \cdot\cdot F_{X_n}(k)$$ This is good progress for the important random variable $X$, but we can make another assumption for the sake of modeling. 
 
 ### Assumption: Identically Distributed $X_i$
 We will assume some common distribution for each of the games $X_i$. This shouldn't make us too uncomfortable because in the real world, we know that the production of a given player in a game is somewhat inherent to the player. Of course, there are instances when a player might be expected to produce more against certain teams (Evan Fournier versus Boston in the 2021-2022 season, for example) but for the sake of modeling we will assume the probability distribution does not change for a given player in between their games. The intuitive explanation of this assumption is that the probability that a player produces a certain number of fantasy points (30, say) does not depend on the game that they're in. 
@@ -51,7 +51,7 @@ made_shots_possible = range(0, 20)
 x_normal_range = np.linspace(0, 20, 100)
 shots_made_probs = binom.pmf(n=shots_attempted, p=shot_make_pct, k=made_shots_possible)
 shots_made_probs_normal = norm.pdf(x_normal_range, loc=shots_attempted*shot_make_pct, scale = np.sqrt(shots_attempted * shot_make_pct * (1 - shot_make_pct)))
-plt.stem(made_shots_possible, shots_made_probs, label="Binomial Predicted Probabilities")
+plt.stem(made_shots_possible, shots_made_probs, label="Binomial Predicted Probabilities", use_line_collection=True)
 plt.plot(x_normal_range, shots_made_probs_normal, "purple", label="Normal Predicted Probabilities")
 plt.legend()
 plt.xlabel("Number of shots made")
@@ -59,13 +59,13 @@ plt.ylabel("Probability")
 plt.show()
 ```
 
-    /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/ipykernel_launcher.py:11: UserWarning: In Matplotlib 3.3 individual lines on a stem plot will be added as a LineCollection instead of individual lines. This significantly improves the performance of a stem plot. To remove this warning and switch to the new behaviour, set the "use_line_collection" keyword argument to True.
-      # This is added back by InteractiveShellApp.init_path()
+
+![png](README_files/README_1_0.png)
 
 
-
-![png](README_files/README_1_1.png)
-
+### Model (cont.)
+Let us take a moment to recap. We are interested in the random variable $X=\max\{X_1, ..., X_n\}$ where the $X_i$ are i.i.d. Normal random variables. We have $X$ is the highest fantasy score of a player in the week and the $X_i$ are the fantasy scores in the individual games. Recall that the normal distribution is parameterized by two values: the mean and variance of the variable. These parameters will depend on the player in question so we will denote them $\mu_X$ and $\sigma^2_X$. With these parameters we can fully describe the behavior of the random variables $X_i$ with the pdf and cdf. Observe the pdf of $X_i$ is $$f_{X_i}(k)=\frac{1}{\sqrt{2\pi\sigma_X^2}}\exp(\frac{-1}{2\sigma_X^2}(k-\mu_X)^2)$$ and the cdf is $$F_{X_i}(k)= \frac{1}{2}[1+\text{erf}(\frac{k-\mu_X}{\sqrt{2\sigma^2_X}})]$$ where erf is the typical error function $\text{erf}(z)=\frac{2}{\sqrt{\pi}}\int_0^ze^{-t^2}dt$ Of course, we have not done any work to estimate these parameters $\mu_X$ and $\sigma^2_X$, but this we will examine later. The cdf of $X$ is therefore $$F_{X}(k)=F^n_{X_i}(k) \\ = \frac{1}{2^n}[1+\text{erf}(\frac{k - \mu_X}{\sqrt{2\sigma_X^2}})]^n \\ = \frac{1}{2^n}\sum_{i=0}^n {n \choose i} [\text{erf}(\frac{k-\mu_X}{\sqrt{2\sigma_X^2}})]^i\text{ using Binomial expansion.}$$ The cdf is nice to have but we would really like to have the pdf of this random variable. We can obtain the pdf by differentiating with respect to $k$ as follows $$f_X(k)=\frac{d}{dk}F_X(k) \\ = \frac{1}{2^n}\sum_{i=0}^n{n \choose i}\frac{d}{dk}[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^i \\ = \frac{1}{2^n}\sum_{i=0}^n{n \choose i}i[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^{i - 1}\frac{d}{dk}\text{erf}(\frac{k - \mu_X}{\sigma_X^2}) \\ = \frac{1}{2^n}\sum_{i=0}^n{n \choose i}i[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^{i - 1}\frac{2}{\sqrt{\pi}}\exp(\frac{-(k - \mu_X)^2}{2\sigma_X^2})\frac{1}{\sqrt{2\sigma_X^2}} \\ = \exp(\frac{-(k - \mu_X)^2}{2\sigma_X^2})\frac{1}{2^{n - 1}\sqrt{2\pi\sigma_X^2}}\sum_{i=0}^n{n \choose i}i[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^{i - 1}. $$
+Although this pdf of $X$ is quite complicated we should be excited to have an exact analytic form for $f_X(k)$ since the behavior of this random variable can be exactly described now. Let us gut check this pdf with a real example. 
 
 
 ```python
