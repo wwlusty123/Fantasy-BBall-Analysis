@@ -150,6 +150,257 @@ expectation(mu=25, var=25, n=3)
 
 
 
-#### Sensitivity of distribution parameters
+## Building a dataset
+
+
+```python
+from nba_api.stats.endpoints import playercareerstats
+career = playercareerstats.PlayerCareerStats(player_id='203999')
+career.get_data_frames()[0]
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PLAYER_ID</th>
+      <th>SEASON_ID</th>
+      <th>LEAGUE_ID</th>
+      <th>TEAM_ID</th>
+      <th>TEAM_ABBREVIATION</th>
+      <th>PLAYER_AGE</th>
+      <th>GP</th>
+      <th>GS</th>
+      <th>MIN</th>
+      <th>FGM</th>
+      <th>...</th>
+      <th>FT_PCT</th>
+      <th>OREB</th>
+      <th>DREB</th>
+      <th>REB</th>
+      <th>AST</th>
+      <th>STL</th>
+      <th>BLK</th>
+      <th>TOV</th>
+      <th>PF</th>
+      <th>PTS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>203999</td>
+      <td>2015-16</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>21.0</td>
+      <td>80</td>
+      <td>55</td>
+      <td>1733.0</td>
+      <td>307</td>
+      <td>...</td>
+      <td>0.811</td>
+      <td>181</td>
+      <td>379</td>
+      <td>560</td>
+      <td>189</td>
+      <td>79</td>
+      <td>50</td>
+      <td>104</td>
+      <td>208</td>
+      <td>796</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>203999</td>
+      <td>2016-17</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>22.0</td>
+      <td>73</td>
+      <td>59</td>
+      <td>2038.0</td>
+      <td>494</td>
+      <td>...</td>
+      <td>0.825</td>
+      <td>212</td>
+      <td>506</td>
+      <td>718</td>
+      <td>359</td>
+      <td>61</td>
+      <td>55</td>
+      <td>171</td>
+      <td>214</td>
+      <td>1221</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>203999</td>
+      <td>2017-18</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>23.0</td>
+      <td>75</td>
+      <td>73</td>
+      <td>2443.0</td>
+      <td>504</td>
+      <td>...</td>
+      <td>0.850</td>
+      <td>195</td>
+      <td>608</td>
+      <td>803</td>
+      <td>458</td>
+      <td>90</td>
+      <td>61</td>
+      <td>210</td>
+      <td>212</td>
+      <td>1385</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>203999</td>
+      <td>2018-19</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>24.0</td>
+      <td>80</td>
+      <td>80</td>
+      <td>2504.0</td>
+      <td>616</td>
+      <td>...</td>
+      <td>0.821</td>
+      <td>228</td>
+      <td>637</td>
+      <td>865</td>
+      <td>580</td>
+      <td>108</td>
+      <td>55</td>
+      <td>248</td>
+      <td>228</td>
+      <td>1604</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>203999</td>
+      <td>2019-20</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>25.0</td>
+      <td>73</td>
+      <td>73</td>
+      <td>2335.0</td>
+      <td>565</td>
+      <td>...</td>
+      <td>0.817</td>
+      <td>166</td>
+      <td>545</td>
+      <td>711</td>
+      <td>512</td>
+      <td>85</td>
+      <td>44</td>
+      <td>226</td>
+      <td>222</td>
+      <td>1456</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>203999</td>
+      <td>2020-21</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>26.0</td>
+      <td>72</td>
+      <td>72</td>
+      <td>2488.0</td>
+      <td>732</td>
+      <td>...</td>
+      <td>0.868</td>
+      <td>205</td>
+      <td>575</td>
+      <td>780</td>
+      <td>599</td>
+      <td>95</td>
+      <td>48</td>
+      <td>222</td>
+      <td>192</td>
+      <td>1898</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>203999</td>
+      <td>2021-22</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>27.0</td>
+      <td>74</td>
+      <td>74</td>
+      <td>2476.0</td>
+      <td>764</td>
+      <td>...</td>
+      <td>0.810</td>
+      <td>206</td>
+      <td>813</td>
+      <td>1019</td>
+      <td>584</td>
+      <td>109</td>
+      <td>63</td>
+      <td>281</td>
+      <td>191</td>
+      <td>2004</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>203999</td>
+      <td>2022-23</td>
+      <td>00</td>
+      <td>1610612743</td>
+      <td>DEN</td>
+      <td>28.0</td>
+      <td>51</td>
+      <td>51</td>
+      <td>1714.0</td>
+      <td>480</td>
+      <td>...</td>
+      <td>0.822</td>
+      <td>105</td>
+      <td>479</td>
+      <td>584</td>
+      <td>515</td>
+      <td>65</td>
+      <td>36</td>
+      <td>181</td>
+      <td>134</td>
+      <td>1261</td>
+    </tr>
+  </tbody>
+</table>
+<p>8 rows × 27 columns</p>
+</div>
+
+
 
 

@@ -1,1 +1,6 @@
 input = read.csv("randle.csv", header = TRUE)
+attach(input)
+FPTS = PTS + AST + ORB + DRB + 3 * (BLK + STL)
+qqnorm(FPTS)
+qqline(FPTS)
+hist(FPTS)
