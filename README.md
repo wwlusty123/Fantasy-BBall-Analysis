@@ -31,12 +31,12 @@ We will assume that each of a player's games are independent of one another. Thi
 
 Now back to the model. Using the independence assumption we can define the cdf of the variable $X$ $$F_X(k)=P(X_1 \leq k)P(X_2 \leq k) \cdot \cdot \cdot P(X_n \leq k) \\ = F_{X_1}(k)\cdot \cdot\cdot F_{X_n}(k)$$ This is good progress for the important random variable $X$, but we can make another assumption for the sake of modeling. 
 
-### Assumption: Identically Distributed $X_i$
+#### Assumption: Identically Distributed $X_i$
 We will assume some common distribution for each of the games $X_i$. This shouldn't make us too uncomfortable because in the real world, we know that the production of a given player in a game is somewhat inherent to the player. Of course, there are instances when a player might be expected to produce more against certain teams (Evan Fournier versus Boston in the 2021-2022 season, for example) but for the sake of modeling we will assume the probability distribution does not change for a given player in between their games. The intuitive explanation of this assumption is that the probability that a player produces a certain number of fantasy points (30, say) does not depend on the game that they're in. 
 
 Again let's return to our model. We now have $F_{X_i}(k)$ is the same for every $i=1, 2, ..., n$ and so $$F_X(k) = P(X \leq k) = [F_{X_i}(k)]^n \\ = F_i^n(k).$$ Now is the time to make a choice for the distribution of a player's fantasy production in a given game.
 
-### Assumption: X_i are Normal. 
+#### Assumption: X_i are Normal. 
 One reasonable choice for the distribution of the $X_i$ would be the normal distribution. One immediate concern of this choice is that the number of fantasy points in a given game by a player is inherently discrete, not continuous as a normal distribution would suggest. This is because the $X_i$ are typically given by a linear combination of the player's points, rebounds, assists, etc. which are discrete (integer) values. So why is it OK to model a discrete number with a continuous random variable? Well, in reality a more accurate model would be to say that the number of points, rebounds, and so on are binomial random variables and so the $X_i$ would be some linear combination of binomial variables. However, we know that as the number of trials in a binomial distribution grows large, the binomial pmf is well-approximated by a normal bell curve. This is illustrated below. 
 
 
@@ -64,10 +64,92 @@ plt.show()
 
 
 ### Model (cont.)
-Let us take a moment to recap. We are interested in the random variable $X=\max\{X_1, ..., X_n\}$ where the $X_i$ are i.i.d. Normal random variables. We have $X$ is the highest fantasy score of a player in the week and the $X_i$ are the fantasy scores in the individual games. Recall that the normal distribution is parameterized by two values: the mean and variance of the variable. These parameters will depend on the player in question so we will denote them $\mu_X$ and $\sigma^2_X$. With these parameters we can fully describe the behavior of the random variables $X_i$ with the pdf and cdf. Observe the pdf of $X_i$ is $$f_{X_i}(k)=\frac{1}{\sqrt{2\pi\sigma_X^2}}\exp(\frac{-1}{2\sigma_X^2}(k-\mu_X)^2)$$ and the cdf is $$F_{X_i}(k)= \frac{1}{2}[1+\text{erf}(\frac{k-\mu_X}{\sqrt{2\sigma^2_X}})]$$ where erf is the typical error function $\text{erf}(z)=\frac{2}{\sqrt{\pi}}\int_0^ze^{-t^2}dt$ Of course, we have not done any work to estimate these parameters $\mu_X$ and $\sigma^2_X$, but this we will examine later. The cdf of $X$ is therefore $$F_{X}(k)=F^n_{X_i}(k) \\ = \frac{1}{2^n}[1+\text{erf}(\frac{k - \mu_X}{\sqrt{2\sigma_X^2}})]^n \\ = \frac{1}{2^n}\sum_{i=0}^n {n \choose i} [\text{erf}(\frac{k-\mu_X}{\sqrt{2\sigma_X^2}})]^i\text{ using Binomial expansion.}$$ The cdf is nice to have but we would really like to have the pdf of this random variable. We can obtain the pdf by differentiating with respect to $k$ as follows $$f_X(k)=\frac{d}{dk}F_X(k) \\ = \frac{1}{2^n}\sum_{i=0}^n{n \choose i}\frac{d}{dk}[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^i \\ = \frac{1}{2^n}\sum_{i=0}^n{n \choose i}i[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^{i - 1}\frac{d}{dk}\text{erf}(\frac{k - \mu_X}{\sigma_X^2}) \\ = \frac{1}{2^n}\sum_{i=0}^n{n \choose i}i[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^{i - 1}\frac{2}{\sqrt{\pi}}\exp(\frac{-(k - \mu_X)^2}{2\sigma_X^2})\frac{1}{\sqrt{2\sigma_X^2}} \\ = \exp(\frac{-(k - \mu_X)^2}{2\sigma_X^2})\frac{1}{2^{n - 1}\sqrt{2\pi\sigma_X^2}}\sum_{i=0}^n{n \choose i}i[\text{erf}(\frac{k - \mu_X}{\sigma_X^2})]^{i - 1}. $$
-Although this pdf of $X$ is quite complicated we should be excited to have an exact analytic form for $f_X(k)$ since the behavior of this random variable can be exactly described now. Let us gut check this pdf with a real example. 
+Let us take a moment to recap. We are interested in the random variable $X=\max\{X_1, ..., X_n\}$ where the $X_i$ are i.i.d. Normal random variables. We have $X$ is the highest fantasy score of a player in the week and the $X_i$ are the fantasy scores in the individual games. Recall that the normal distribution is parameterized by two values: the mean and variance of the variable. These parameters will depend on the player in question so we will denote them $\mu_X$ and $\sigma^2_X$. With these parameters we can fully describe the behavior of the random variables $X_i$ with the pdf and cdf. Observe the pdf of $X_i$ is $$f_{X_i}(k)=\frac{1}{\sqrt{2\pi\sigma_X^2}}\exp(\frac{-1}{2\sigma_X^2}(k-\mu_X)^2)$$ and the cdf is $$F_{X_i}(k)= \frac{1}{2}[1+\text{erf}(\frac{k-\mu_X}{\sqrt{2\sigma^2_X}})]$$ where erf is the typical error function $\text{erf}(z)=\frac{2}{\sqrt{\pi}}\int_0^ze^{-t^2}dt$ Of course, we have not done any work to estimate these parameters $\mu_X$ and $\sigma^2_X$, but this we will examine later. The cdf of $X$ is therefore $$F_{X}(k)=F^n_{X_i}(k) \\ = \frac{1}{2^n}[1+\text{erf}(\frac{k - \mu_X}{\sqrt{2\sigma_X^2}})]^n.$$ The cdf is nice to have but we would really like to have the pdf of this random variable. We can obtain the pdf by differentiating with respect to $k$ as follows $$f_X(k)=\frac{d}{dk}F_X(k) \\ = \frac{n}{2^n}[1+\text{erf}(\frac{k - \mu_X}{\sqrt{2\sigma_X^2}})]^{n - 1}\frac{2}{\sqrt{\pi}}\exp(-\frac{(k-\mu_X)^2}{2\sigma_X^2})\frac{1}{\sqrt{2\sigma_X^2}} \\ = \frac{n}{2^{n - 1}\sqrt{2\pi\sigma_X^2}}\exp(-\frac{(k-\mu_X)^2}{2\sigma_X^2})[1+\text{erf}(\frac{k - \mu_X}{\sqrt{2\sigma_X^2}})]^{n - 1}$$
+Although this pdf of $X$ is quite complicated we should be excited to have an exact analytic form for $f_X(k)$ since the behavior of this random variable can be exactly described now. Let us inspect the pdfs of $X_i$ and $X$, respectively.
 
 
 ```python
-
+from scipy.special import erf
+def pdf_max_normal(x, mu, var, n):
+    toret = (x - mu) ** 2 / (2 * var)
+    toret = np.exp(-1 * toret)
+    toret *= (1 + erf((x - mu) / np.sqrt(2 * var))) ** (n - 1)
+    toret *= n / (2 ** (n - 1) * np.sqrt(2 * np.pi * var))
+    return toret
 ```
+
+
+```python
+def plot_pdf_X(mu, sigma, n, x=np.linspace(0, 50, 200)):
+    x_normal = norm.pdf(x, mu, sigma)
+    x_max_normal = pdf_max_normal(x, mu, sigma ** 2, n)
+    plt.plot(x, x_normal, label="single game X_i")
+    plt.plot(x, x_max_normal, label="X = max(X_i)")
+    plt.title("PDFs of X and Xi")
+    plt.legend()
+    plt.show()
+plot_pdf_X(mu=25, sigma=5, n=3)
+```
+
+
+![png](README_files/README_4_0.png)
+
+
+#### Fantastic!
+We should be very excited to see the pdf of the crucial variable $X$ meets some of the expectations we had for it. Intuitively, the mean of this distribution is greater than the mean of the single game distribution. Let's play around with some of the parameters in the distribution.
+
+
+```python
+#Doubling the number of games to 6
+plot_pdf_X(mu=25, sigma=5, n=6)
+```
+
+
+![png](README_files/README_6_0.png)
+
+
+
+```python
+# Doubling the standard deviation to 10
+plot_pdf_X(mu=25, sigma=10, n=3)
+```
+
+
+![png](README_files/README_7_0.png)
+
+
+
+```python
+# Doubling the mean to 50
+plot_pdf_X(mu=50, sigma=5, n=3, x = np.linspace(20, 70, 200))
+```
+
+
+![png](README_files/README_8_0.png)
+
+
+#### Observations: 
+The max of a weekly set of scores is not highly sensitive to the number of games played. Changes to $\mu_X$ seem to shift both curves equally. However, the peak of the pdf seems to be sensitive to changes in $\sigma_X^2$. To investigate these relationships further, let us develop several methods of comparing or scoring these distributions. 
+
+#### Metrics for Players
+In fantasy, the number that matters is tha max of a player's scores in a given week, i.e. the $X$ variable. The $X$ variable is parameterized by $\mu_X, \sigma^2_X, \text{ and }n$ and has pdf $f_X(k)$ which is defined above. We would like a way to compare different players according to their unique set of parameters $\{\mu_X, \sigma^2_X, n\}$. The first method of doing so will be using expected value. Recall that $E(X)=\int_{-\infty}^\infty xf_X(x)dx$. In this context, $E(X)$ expected maximum number of fantasy points a player will produce in a given week. Recall also that $E(X_i)$ is nothing but $\mu_X$.
+
+
+```python
+import scipy.integrate as integrate
+def expectation(mu, var, n, lower=-np.inf, upper=np.inf):
+    return integrate.quad(lambda x: x * pdf_max_normal(x, mu, var, n), lower, upper)[0]
+
+expectation(mu=25, var=25, n=3)
+```
+
+
+
+
+    29.23142187660817
+
+
+
+#### Sensitivity of distribution parameters
+
+
