@@ -1,0 +1,1 @@
+input = read.csv("randle.csv", header = TRUE)
